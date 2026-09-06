@@ -296,23 +296,46 @@ export default function Home() {
     if (!renamingNode || !renameInput.trim() || !telegramId) return;
     
     try {
+      const newName = renameInput.trim();
       const res = await fetch("/api/nodes", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nodeId: renamingNode._id,
-          newName: renameInput.trim(),
+          newName: newName,
           ownerId: telegramId
         })
       });
       if (res.ok) {
+        // Sync rename with Telegram caption if it's a file
+        if (renamingNode.telegramMessageId && storageChannelId) {
+          try {
+            const client = getTelegramClient();
+            if (client) {
+              await connectClient(client);
+              await client.editMessage(getNormalizedChannelId(storageChannelId), {
+                message: renamingNode.telegramMessageId,
+                text: newName
+              });
+              toast.success("Telegram caption updated!");
+            }
+          } catch (tgErr: any) {
+            console.error("Failed to update Telegram message caption:", tgErr);
+            toast.error("Failed to update Telegram caption: " + (tgErr.message || "Unknown error"));
+          }
+        }
+
         window.dispatchEvent(new Event("refresh_folders"));
         fetchNodes(telegramId, currentFolder ? currentFolder.id : null);
         setRenamingNode(null);
         setRenameInput("");
+        toast.success("Renamed successfully");
+      } else {
+        throw new Error("API failed to rename node");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to rename", err);
+      toast.error(err.message || "Failed to rename");
     }
   };
 
@@ -517,10 +540,12 @@ export default function Home() {
         </div>
         
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={() => setIsCreatingFolder(true)} className="h-9 px-3">
-            <Folder className="w-4 h-4" />
-            <span className="hidden sm:inline ml-1.5">New Folder</span>
-          </Button>
+          {!currentFolder && (
+            <Button variant="secondary" size="sm" onClick={() => setIsCreatingFolder(true)} className="h-9 px-3">
+              <Folder className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1.5">New Folder</span>
+            </Button>
+          )}
           
           <input 
             type="file" 

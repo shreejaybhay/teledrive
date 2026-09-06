@@ -76,7 +76,7 @@
   --card-foreground: #1c1c1c;
   --popover: #ffffff;
   --popover-foreground: #1c1c1c;
-  --primary: #8774e1;
+  --primary: #2c9fd7;
   --primary-foreground: #ffffff;
   --secondary: #f4f4f5;
   --secondary-foreground: #1c1c1c;
@@ -87,7 +87,7 @@
   --destructive: #ff595a;
   --border: #e4e4e7;
   --input: #e4e4e7;
-  --ring: #8774e1;
+  --ring: #2c9fd7;
   --radius: 0.75rem;
 }
 
@@ -101,7 +101,7 @@
   --popover: #1c1c1c;
   /* Dropdowns, Modals */
   --popover-foreground: #ffffff;
-  --primary: #8774e1;
+  --primary: #2c9fd7;
   /* Telegram Purple/Blue */
   --primary-foreground: #ffffff;
   --secondary: #2c2c2c;
@@ -117,5 +117,5 @@
   --border: #00000040;
   /* Subtle borders */
   --input: #2c2c2c;
-  --ring: #8774e1;
+  --ring: #2c9fd7;
 }
